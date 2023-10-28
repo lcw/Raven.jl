@@ -1754,6 +1754,7 @@ function materializefacemaps(
     dtoc_degree3_global,
     quadranttolevel,
     quadranttoglobalid,
+    lvlzeroboundarycodes = nothing,
 )
     numcells = last(size(dtoc_degree3_local))
     cellindices = LinearIndices(size(cell))
@@ -1843,7 +1844,15 @@ function materializefacemaps(
             kind = length(nzrange(ctod_degree3_local, face[1]))
 
             if kind == 1
-                quadranttoboundary[f, q] = 1
+                if lvlzeroboundarycodes == nothing
+                    quadranttoboundary[f, q] = 1
+                elseif quadranttolevel[q] == 0
+                    quadranttoboundary[f, q] =
+                        lvlzeroboundarycodes[quadranttoglobalid[q]][f]
+                else
+                    # Unsupported broadcasting lvlzeroboundarycodes to refined level. defaulting to single boundary type
+                    quadranttoboundary[f, q] = 1
+                end
             elseif kind == 1 + numchildfaces
                 # Get the canonical orientation of the global face indices
                 fg, _ = fldmod1(f, 2)

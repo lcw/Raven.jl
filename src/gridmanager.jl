@@ -318,15 +318,29 @@ function generate(warp::Function, gm::GridManager)
 
     ctod_degree3_local = materializectod(dtoc_degree3_local)
 
-    facemaps, quadranttoboundary = materializefacemaps(
-        referencecell(gm),
-        P4estTypes.lengthoflocalquadrants(forest(gm)),
-        ctod_degree3_local,
-        dtoc_degree3_local,
-        dtoc_degree3_global,
-        quadranttolevel,
-        quadranttoglobalid,
-    )
+    if gm.coarsegrid isa MeshImportCoarseGrid
+        lvlzeroboundarycodes = gm.coarsegrid.MeshImport.type_boundary
+        facemaps, quadranttoboundary = materializefacemaps(
+            referencecell(gm),
+            P4estTypes.lengthoflocalquadrants(forest(gm)),
+            ctod_degree3_local,
+            dtoc_degree3_local,
+            dtoc_degree3_global,
+            quadranttolevel,
+            quadranttoglobalid,
+            lvlzeroboundarycodes,
+        )
+    else
+        facemaps, quadranttoboundary = materializefacemaps(
+            referencecell(gm),
+            P4estTypes.lengthoflocalquadrants(forest(gm)),
+            ctod_degree3_local,
+            dtoc_degree3_local,
+            dtoc_degree3_global,
+            quadranttolevel,
+            quadranttoglobalid,
+        )
+    end
 
     continuoustodiscontinuous = materializectod(discontinuoustocontinuous)
 
